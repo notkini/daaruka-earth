@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from sqlalchemy import text
+from app.api.auth import router as auth_router
 
 from app.db.session import engine
 
@@ -8,6 +9,8 @@ app = FastAPI(
     description="Geospatial analytics platform for carbon and biodiversity projects.",
     version="0.1.0",
 )
+
+app.include_router(auth_router)
 
 
 @app.get("/health")
