@@ -4,8 +4,8 @@ from app.models.site_analytics import SiteAnalytics
 from app.models.user import User
 
 __all__ = [
-    "User",
     "Project",
     "Site",
     "SiteAnalytics",
+    "User",
 ]

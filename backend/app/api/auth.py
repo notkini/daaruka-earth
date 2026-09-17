@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+
 from app.core.dependencies import get_current_user
 from app.core.security import (
     create_access_token,
@@ -14,7 +15,6 @@ from app.schemas.auth import (
     UserRegister,
     UserResponse,
 )
-
 
 router = APIRouter(
     prefix="/api/auth",
@@ -31,11 +31,7 @@ def register(
     user_data: UserRegister,
     db: Session = Depends(get_db),
 ) -> User:
-    existing_user = (
-        db.query(User)
-        .filter(User.email == user_data.email)
-        .first()
-    )
+    existing_user = db.query(User).filter(User.email == user_data.email).first()
 
     if existing_user:
         raise HTTPException(
@@ -63,11 +59,7 @@ def login(
     user_data: UserLogin,
     db: Session = Depends(get_db),
 ) -> dict[str, str]:
-    user = (
-        db.query(User)
-        .filter(User.email == user_data.email)
-        .first()
-    )
+    user = db.query(User).filter(User.email == user_data.email).first()
 
     if not user or not verify_password(
         user_data.password,
@@ -84,6 +76,7 @@ def login(
         "access_token": access_token,
         "token_type": "bearer",
     }
+
 
 @router.get(
     "/me",

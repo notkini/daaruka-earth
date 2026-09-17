@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from sqlalchemy import text
-from app.api.auth import router as auth_router
 
+from app.api.auth import router as auth_router
 from app.db.session import engine
 
 app = FastAPI(
@@ -22,9 +22,7 @@ def health_check() -> dict[str, str]:
 def database_health_check() -> dict[str, str]:
     with engine.connect() as connection:
         connection.execute(text("SELECT 1"))
-        result = connection.execute(
-            text("SELECT PostGIS_Version()")
-        )
+        result = connection.execute(text("SELECT PostGIS_Version()"))
         postgis_version = result.scalar_one()
 
     return {

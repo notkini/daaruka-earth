@@ -6,7 +6,6 @@ from app.core.security import decode_access_token
 from app.db.dependencies import get_db
 from app.models.user import User
 
-
 security = HTTPBearer()
 
 
@@ -23,7 +22,7 @@ def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired token",
             headers={"WWW-Authenticate": "Bearer"},
-        )
+        ) from error 
 
     user = db.query(User).filter(User.id == user_id).first()
 
