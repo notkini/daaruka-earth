@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";import type { FormEvent } from "react";
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
 import PasswordInput from "../components/PasswordInput";
@@ -29,6 +30,7 @@ function Settings() {
   const [success, setSuccess] = useState("");
 
   const passwordStrong = isPasswordStrong(newPassword);
+
   const passwordsMatch =
     newPassword.length > 0 &&
     confirmPassword.length > 0 &&
@@ -50,9 +52,7 @@ function Settings() {
     loadUser();
   }, []);
 
-  async function handleChangePassword(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleChangePassword(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setError("");
@@ -94,9 +94,7 @@ function Settings() {
       if (Array.isArray(detail)) {
         setError(detail.join(" "));
       } else {
-        setError(
-          detail || "Unable to change your password.",
-        );
+        setError(detail || "Unable to change your password.");
       }
     } finally {
       setChangingPassword(false);
@@ -110,13 +108,21 @@ function Settings() {
 
   if (loadingUser) {
     return (
-      <div className="min-h-screen bg-[#f5f7f4]">
-        <div className="mx-auto max-w-5xl px-6 py-10">
+      <div className="min-h-screen bg-[#f4f7f3]">
+        <div className="mx-auto max-w-6xl px-5 py-8 sm:px-8 lg:px-10">
           <div className="animate-pulse">
-            <div className="h-8 w-40 rounded bg-slate-200" />
-            <div className="mt-3 h-4 w-72 rounded bg-slate-200" />
+            <div className="h-4 w-20 rounded bg-[#dfe7e0]" />
+            <div className="mt-4 h-9 w-44 rounded-lg bg-[#dfe7e0]" />
+            <div className="mt-3 h-4 w-72 rounded bg-[#e5ebe6]" />
 
-            <div className="mt-10 h-64 rounded-2xl bg-white" />
+            <div className="mt-10 grid gap-6 lg:grid-cols-[220px_1fr]">
+              <div className="hidden h-48 rounded-2xl bg-white lg:block" />
+
+              <div className="space-y-6">
+                <div className="h-32 rounded-3xl bg-white" />
+                <div className="h-[500px] rounded-3xl bg-white" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -124,47 +130,69 @@ function Settings() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f7f4]">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
+    <div className="min-h-screen bg-[#f4f7f3]">
+      {/* Header */}
+      <header className="sticky top-0 z-20 border-b border-[#dfe7e0] bg-white/95 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8 lg:px-10">
           <div>
             <button
+              type="button"
               onClick={() => navigate(-1)}
-              className="mb-2 text-sm font-medium text-emerald-700 transition hover:text-emerald-800"
+              className="mb-1 inline-flex items-center gap-2 text-xs font-semibold text-[#39734a] transition hover:text-[#17351f]"
             >
-              ← Back
+              <span>←</span>
+              Back
             </button>
 
-            <h1 className="text-2xl font-bold tracking-tight text-[#17351f]">
+            <h1 className="text-2xl font-semibold tracking-tight text-[#17351f]">
               Settings
             </h1>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 hidden text-sm text-gray-500 sm:block">
               Manage your account and security.
             </p>
           </div>
 
           <button
+            type="button"
             onClick={handleSignOut}
-            className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+            className="rounded-xl border border-[#d5ded6] bg-white px-4 py-2.5 text-sm font-semibold text-gray-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
           >
             Sign out
           </button>
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-6 py-8">
-        <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
+      <main className="mx-auto max-w-6xl px-5 py-8 sm:px-8 lg:px-10">
+        <div className="grid gap-6 lg:grid-cols-[220px_1fr]">
           {/* Settings navigation */}
           <aside className="hidden lg:block">
-            <div className="sticky top-6 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-              <div className="rounded-xl bg-emerald-50 px-4 py-3">
-                <p className="text-sm font-semibold text-emerald-800">
-                  Account
+            <div className="sticky top-28 rounded-2xl border border-[#dfe7e0] bg-white p-3 shadow-sm">
+              <div className="rounded-xl bg-[#edf5ee] px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#39734a] text-sm font-semibold text-white">
+                    A
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-semibold text-[#285c35]">
+                      Account
+                    </p>
+
+                    <p className="mt-0.5 text-[11px] text-[#5f8065]">
+                      Profile & security
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-3 rounded-xl px-4 py-3">
+                <p className="text-xs font-medium text-gray-400">
+                  ACCOUNT SETTINGS
                 </p>
 
-                <p className="mt-1 text-xs text-emerald-700">
-                  Profile & security
+                <p className="mt-2 text-xs leading-5 text-gray-500">
+                  Manage your profile information and password from this page.
                 </p>
               </div>
             </div>
@@ -172,53 +200,79 @@ function Settings() {
 
           <div className="space-y-6">
             {/* Profile */}
-            <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <div className="border-b border-slate-100 px-6 py-5">
-                <h2 className="text-lg font-semibold text-[#17351f]">
-                  Profile
-                </h2>
+            <section className="overflow-hidden rounded-3xl border border-[#dfe7e0] bg-white shadow-sm">
+              <div className="border-b border-[#edf1ed] px-6 py-5 sm:px-7">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#edf5ee] text-sm text-[#39734a]">
+                    @
+                  </div>
 
-                <p className="mt-1 text-sm text-slate-500">
-                  Your account information.
-                </p>
+                  <div>
+                    <h2 className="text-lg font-semibold text-[#17351f]">
+                      Profile
+                    </h2>
+
+                    <p className="mt-0.5 text-sm text-gray-500">
+                      Your account information.
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              <div className="px-6 py-6">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              <div className="px-6 py-6 sm:px-7">
+                <div className="rounded-2xl border border-[#e5ebe6] bg-[#f8faf8] p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-400">
                     Email address
                   </p>
 
-                  <p className="mt-2 text-sm font-medium text-slate-800">
-                    {user?.email || "Unknown"}
-                  </p>
+                  <div className="mt-2 flex items-center justify-between gap-4">
+                    <p className="break-all text-sm font-semibold text-[#17351f]">
+                      {user?.email || "Unknown"}
+                    </p>
+
+                    <span className="shrink-0 rounded-full bg-[#e7f2e9] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[#39734a]">
+                      Account
+                    </span>
+                  </div>
                 </div>
               </div>
             </section>
 
             {/* Security */}
-            <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <div className="border-b border-slate-100 px-6 py-5">
-                <h2 className="text-lg font-semibold text-[#17351f]">
-                  Security
-                </h2>
+            <section className="overflow-hidden rounded-3xl border border-[#dfe7e0] bg-white shadow-sm">
+              <div className="border-b border-[#edf1ed] px-6 py-5 sm:px-7">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#edf5ee] text-sm text-[#39734a]">
+                    🔒
+                  </div>
 
-                <p className="mt-1 text-sm text-slate-500">
-                  Update your password to keep your account secure.
-                </p>
+                  <div>
+                    <h2 className="text-lg font-semibold text-[#17351f]">
+                      Security
+                    </h2>
+
+                    <p className="mt-0.5 text-sm text-gray-500">
+                      Update your password to keep your account secure.
+                    </p>
+                  </div>
+                </div>
               </div>
 
               <form
                 onSubmit={handleChangePassword}
-                className="space-y-5 px-6 py-6"
+                className="space-y-5 px-6 py-6 sm:px-7"
               >
-                <PasswordInput
-                  label="Current password"
-                  value={currentPassword}
-                  onChange={setCurrentPassword}
-                  placeholder="Enter your current password"
-                  autoComplete="current-password"
-                />
+                <div>
+                  <PasswordInput
+                    label="Current password"
+                    value={currentPassword}
+                    onChange={setCurrentPassword}
+                    placeholder="Enter your current password"
+                    autoComplete="current-password"
+                  />
+                </div>
+
+                <div className="h-px bg-[#edf1ed]" />
 
                 <div>
                   <PasswordInput
@@ -229,7 +283,9 @@ function Settings() {
                     autoComplete="new-password"
                   />
 
-                  <PasswordRequirements password={newPassword} />
+                  <div className="mt-3 rounded-xl border border-[#e5ebe6] bg-[#f8faf8] p-3">
+                    <PasswordRequirements password={newPassword} />
+                  </div>
                 </div>
 
                 <div>
@@ -243,13 +299,15 @@ function Settings() {
 
                   {confirmPassword.length > 0 && (
                     <div
-                      className={`mt-2 flex items-center gap-2 text-sm ${
-                        passwordsMatch
-                          ? "text-emerald-600"
-                          : "text-red-500"
+                      className={`mt-2 flex items-center gap-2 text-xs font-medium ${
+                        passwordsMatch ? "text-[#39734a]" : "text-red-500"
                       }`}
                     >
-                      <span className="font-bold">
+                      <span
+                        className={`flex h-5 w-5 items-center justify-center rounded-full ${
+                          passwordsMatch ? "bg-[#eaf2eb]" : "bg-red-50"
+                        }`}
+                      >
                         {passwordsMatch ? "✓" : "×"}
                       </span>
 
@@ -265,28 +323,31 @@ function Settings() {
                 {error && (
                   <div
                     role="alert"
-                    className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-5 text-red-700"
+                    className="flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm leading-5 text-red-700"
                   >
-                    {error}
+                    <span className="font-bold">!</span>
+                    <span>{error}</span>
                   </div>
                 )}
 
                 {success && (
                   <div
                     role="status"
-                    className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-5 text-emerald-700"
+                    className="flex items-start gap-3 rounded-xl border border-[#cfe2d2] bg-[#f0f7f1] px-4 py-3 text-sm leading-6 text-[#285c35]"
                   >
-                    <div className="flex items-center gap-2">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-200 text-xs font-bold text-emerald-800">
-                        ✓
-                      </span>
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#39734a] text-xs text-white">
+                      ✓
+                    </span>
 
-                      {success}
-                    </div>
+                    <span>{success}</span>
                   </div>
                 )}
 
-                <div className="flex justify-end border-t border-slate-100 pt-5">
+                <div className="flex flex-col gap-3 border-t border-[#edf1ed] pt-5 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-xs leading-5 text-gray-400">
+                    Choose a password that meets all the requirements above.
+                  </p>
+
                   <button
                     type="submit"
                     disabled={
@@ -295,8 +356,12 @@ function Settings() {
                       !passwordsMatch ||
                       currentPassword.length === 0
                     }
-                    className="rounded-xl bg-[#17351f] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#24512f] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
+                    className="flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#17351f] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#24512f] hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
                   >
+                    {changingPassword && (
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                    )}
+
                     {changingPassword
                       ? "Changing password..."
                       : "Change password"}
@@ -306,22 +371,31 @@ function Settings() {
             </section>
 
             {/* Account */}
-            <section className="rounded-2xl border border-red-100 bg-white shadow-sm">
-              <div className="px-6 py-5">
-                <h2 className="text-lg font-semibold text-[#17351f]">
-                  Account
-                </h2>
+            <section className="overflow-hidden rounded-3xl border border-red-100 bg-white shadow-sm">
+              <div className="px-6 py-6 sm:px-7">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-50 text-sm text-red-500">
+                    ↪
+                  </div>
 
-                <p className="mt-1 text-sm text-slate-500">
-                  Sign out of your Darukaa.Earth account.
-                </p>
+                  <div>
+                    <h2 className="text-lg font-semibold text-[#17351f]">
+                      Account
+                    </h2>
 
-                <button
-                  onClick={handleSignOut}
-                  className="mt-5 rounded-xl border border-red-200 px-5 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-50"
-                >
-                  Sign out
-                </button>
+                    <p className="mt-1 text-sm leading-6 text-gray-500">
+                      Sign out of your Darukaa.Earth account on this device.
+                    </p>
+
+                    <button
+                      type="button"
+                      onClick={handleSignOut}
+                      className="mt-5 rounded-xl border border-red-200 px-5 py-3 text-sm font-semibold text-red-600 transition hover:bg-red-50"
+                    >
+                      Sign out
+                    </button>
+                  </div>
+                </div>
               </div>
             </section>
           </div>
@@ -332,4 +406,3 @@ function Settings() {
 }
 
 export default Settings;
-

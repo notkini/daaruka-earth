@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+
 import { Link, useNavigate, useParams } from "react-router-dom";
 import mapboxgl from "mapbox-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
@@ -48,9 +49,6 @@ function ProjectDetail() {
   const [siteName, setSiteName] = useState("");
   const [error, setError] = useState("");
 
-  /*
-   * Load project and sites
-   */
   useEffect(() => {
     async function loadProject() {
       if (!projectId) {
@@ -75,12 +73,9 @@ function ProjectDetail() {
       }
     }
 
-    loadProject();
+    void loadProject();
   }, [projectId]);
 
-  /*
-   * Initialize Mapbox
-   */
   useEffect(() => {
     if (loading) {
       return;
@@ -120,11 +115,7 @@ function ProjectDetail() {
       },
     });
 
-    map.addControl(
-      new mapboxgl.NavigationControl(),
-      "top-right",
-    );
-
+    map.addControl(new mapboxgl.NavigationControl(), "top-right");
     map.addControl(draw, "top-left");
 
     map.on("load", () => {
@@ -160,16 +151,11 @@ function ProjectDetail() {
     return () => {
       drawRef.current = null;
       mapRef.current = null;
-
       setMapReady(false);
-
       map.remove();
     };
   }, [loading]);
 
-  /*
-   * Display saved site polygons
-   */
   useEffect(() => {
     const map = mapRef.current;
 
@@ -214,7 +200,7 @@ function ProjectDetail() {
         source: "sites",
         paint: {
           "fill-color": "#39734a",
-          "fill-opacity": 0.35,
+          "fill-opacity": 0.3,
         },
       });
 
@@ -258,13 +244,6 @@ function ProjectDetail() {
     }
   }, [mapReady, sites, navigate]);
 
-  /*
-   * Escape:
-   *
-   * Exit drawing mode but keep the draft.
-   * The New Site panel remains visible so the user
-   * can still save the polygon.
-   */
   useEffect(() => {
     function handleEscape(event: KeyboardEvent) {
       if (event.key !== "Escape") {
@@ -285,9 +264,6 @@ function ProjectDetail() {
 
       event.preventDefault();
 
-      /*
-       * Leave drawing mode but DO NOT delete anything.
-       */
       draw.changeMode("simple_select");
 
       setHasDraft(true);
@@ -302,9 +278,6 @@ function ProjectDetail() {
     };
   }, []);
 
-  /*
-   * Start or resume drawing
-   */
   function startDrawing() {
     const draw = drawRef.current;
 
@@ -315,16 +288,9 @@ function ProjectDetail() {
 
     setError("");
     setDrawing(true);
-
-    /*
-     * If there is already a draft, don't delete it.
-     */
     draw.changeMode("draw_polygon");
   }
 
-  /*
-   * Cancel the current draft completely
-   */
   function cancelDrawing() {
     const draw = drawRef.current;
 
@@ -339,9 +305,6 @@ function ProjectDetail() {
     setError("");
   }
 
-  /*
-   * Save the current polygon
-   */
   async function saveSite() {
     const draw = drawRef.current;
 
@@ -372,9 +335,7 @@ function ProjectDetail() {
     const coordinates = feature.geometry.coordinates[0];
 
     if (coordinates.length < 4) {
-      setError(
-        "Add at least 3 points and close the polygon before saving.",
-      );
+      setError("Add at least 3 points and close the polygon before saving.");
       return;
     }
 
@@ -387,10 +348,7 @@ function ProjectDetail() {
         },
       );
 
-      setSites((currentSites) => [
-        response.data,
-        ...currentSites,
-      ]);
+      setSites((currentSites) => [response.data, ...currentSites]);
 
       draw.deleteAll();
       draw.changeMode("simple_select");
@@ -407,25 +365,43 @@ function ProjectDetail() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#f5f7f4]">
-        <p className="text-gray-500">
-          Loading project...
-        </p>
+      <div className="min-h-screen bg-[#f4f7f3]">
+        <div className="mx-auto flex min-h-screen max-w-7xl items-center justify-center px-6">
+          <div className="text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#17351f] text-xl font-bold text-white">
+              D
+            </div>
+            <p className="mt-4 text-sm font-medium text-[#17351f]">
+              Loading project...
+            </p>
+            <p className="mt-1 text-xs text-gray-400">
+              Preparing your project workspace
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (!project) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#f5f7f4]">
-        <div className="text-center">
-          <h1 className="text-xl font-semibold text-[#17351f]">
+      <div className="flex min-h-screen items-center justify-center bg-[#f4f7f3] px-6">
+        <div className="max-w-md rounded-3xl border border-[#dfe7e0] bg-white p-8 text-center shadow-sm">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-red-600">
+            !
+          </div>
+
+          <h1 className="mt-5 text-xl font-semibold text-[#17351f]">
             Project not found
           </h1>
 
+          <p className="mt-2 text-sm leading-6 text-gray-500">
+            We couldn't find the project you're looking for.
+          </p>
+
           <Link
             to="/dashboard"
-            className="mt-4 inline-block text-sm font-medium text-[#39734a]"
+            className="mt-6 inline-flex rounded-xl bg-[#17351f] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#24512f]"
           >
             Back to dashboard
           </Link>
@@ -435,56 +411,94 @@ function ProjectDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f7f4]">
-      <header className="border-b border-[#dfe6e0] bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <div>
+    <div className="min-h-screen bg-[#f4f7f3] text-[#17351f]">
+      {/* Header */}
+      <header className="sticky top-0 z-40 border-b border-[#dfe7e0] bg-white/95 backdrop-blur">
+        <div className="mx-auto flex max-w-[1500px] items-center justify-between px-5 py-4 sm:px-8">
+          <div className="min-w-0">
             <Link
               to="/dashboard"
-              className="text-sm font-medium text-[#39734a]"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#39734a] transition hover:text-[#17351f]"
             >
-              ← Dashboard
+              <span>←</span>
+              Dashboard
             </Link>
 
-            <h1 className="mt-2 text-xl font-semibold text-[#17351f]">
-              {project.name}
-            </h1>
+            <div className="mt-2 flex items-center gap-3">
+              <h1 className="truncate text-xl font-semibold tracking-tight sm:text-2xl">
+                {project.name}
+              </h1>
+
+              <span className="hidden rounded-full border border-[#dce8de] bg-[#f5faf6] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#39734a] sm:inline-flex">
+                Project
+              </span>
+            </div>
           </div>
 
           <button
             type="button"
             onClick={() => navigate("/dashboard")}
-            className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="hidden rounded-xl border border-[#d5ded6] bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 sm:block"
           >
-            Back
+            All projects
           </button>
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-6 py-8">
-        <div className="mb-6">
-          <p className="text-sm text-gray-500">
-            {project.description ||
-              "No project description provided."}
-          </p>
-        </div>
+      <main className="mx-auto max-w-[1500px] px-5 py-6 sm:px-8 sm:py-8">
+        {/* Project overview */}
+        <section className="mb-6 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#39734a]">
+              Project workspace
+            </p>
+
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-500">
+              {project.description || "No project description provided."}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 rounded-2xl border border-[#dfe7e0] bg-white px-4 py-3 shadow-sm">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#eef5ef] text-sm font-bold text-[#39734a]">
+              {sites.length}
+            </div>
+
+            <div>
+              <p className="text-xs text-gray-400">Mapped sites</p>
+              <p className="text-sm font-semibold text-[#17351f]">
+                {sites.length === 1 ? "1 site" : `${sites.length} sites`}
+              </p>
+            </div>
+          </div>
+        </section>
 
         {error && (
-          <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {error}
+          <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <span className="font-bold">!</span>
+            <span>{error}</span>
           </div>
         )}
 
-        <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-          <section className="rounded-2xl border border-[#dfe6e0] bg-white shadow-sm">
-            <div className="flex items-center justify-between border-b border-[#e5ebe6] px-5 py-4">
+        {/* Main workspace */}
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
+          {/* Map */}
+          <section className="overflow-hidden rounded-3xl border border-[#dfe7e0] bg-white shadow-sm">
+            <div className="flex flex-col gap-4 border-b border-[#e7ece7] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
               <div>
-                <h2 className="font-semibold text-[#17351f]">
-                  Project map
-                </h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-base font-semibold">
+                    Geographic map
+                  </h2>
 
-                <p className="text-sm text-gray-500">
-                  View and draw geographic sites.
+                  <span
+                    className={`h-2 w-2 rounded-full ${
+                      mapReady ? "bg-[#39734a]" : "animate-pulse bg-gray-300"
+                    }`}
+                  />
+                </div>
+
+                <p className="mt-1 text-sm text-gray-500">
+                  Draw site boundaries and explore mapped areas.
                 </p>
               </div>
 
@@ -493,8 +507,9 @@ function ProjectDetail() {
                   type="button"
                   onClick={startDrawing}
                   disabled={!mapReady}
-                  className="relative z-30 rounded-lg bg-[#17351f] px-4 py-2 text-sm font-medium text-white hover:bg-[#24512f] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#17351f] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#24512f] disabled:cursor-not-allowed disabled:opacity-50"
                 >
+                  <span className="text-base">{hasDraft ? "↻" : "+"}</span>
                   {mapReady
                     ? hasDraft
                       ? "Resume drawing"
@@ -504,10 +519,7 @@ function ProjectDetail() {
               )}
             </div>
 
-            <div
-              className="relative w-full"
-              style={{ height: "620px" }}
-            >
+            <div className="relative h-[520px] w-full sm:h-[620px]">
               <div
                 ref={mapContainerRef}
                 className="absolute inset-0"
@@ -516,104 +528,201 @@ function ProjectDetail() {
                   height: "100%",
                 }}
               />
+
+              {!mapReady && !error && (
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-white/20">
+                  <div className="rounded-xl border border-white/60 bg-white/90 px-4 py-3 text-sm font-medium text-gray-600 shadow-lg backdrop-blur">
+                    Loading map...
+                  </div>
+                </div>
+              )}
+
+              {drawing && (
+                <div className="pointer-events-none absolute left-4 top-4 z-10 max-w-xs rounded-xl border border-white/60 bg-[#17351f]/95 px-4 py-3 text-white shadow-lg backdrop-blur">
+                  <p className="text-xs font-bold uppercase tracking-wider text-[#b9d7bd]">
+                    Drawing mode
+                  </p>
+
+                  <p className="mt-1 text-sm font-medium">
+                    Click points on the map
+                  </p>
+
+                  <p className="mt-1 text-xs leading-5 text-[#c9d9cc]">
+                    Add at least 3 points and click the first point to close
+                    the polygon.
+                  </p>
+                </div>
+              )}
             </div>
           </section>
 
-          <aside className="space-y-6">
+          {/* Sidebar */}
+          <aside className="space-y-5">
+            {/* Drawing panel */}
             {(drawing || hasDraft) && (
-              <section className="rounded-2xl border border-[#dfe6e0] bg-white p-5 shadow-sm">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-semibold text-[#17351f]">
-                      New site
-                    </h3>
+              <section className="rounded-2xl border border-[#d8e2d9] bg-white shadow-sm">
+                <div className="border-b border-[#e7ece7] px-5 py-5">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#39734a]">
+                        Site builder
+                      </p>
 
-                    <p className="mt-2 text-sm leading-6 text-gray-500">
-                      {drawing
-                        ? "Click points on the map to create your polygon."
-                        : "Your current polygon is preserved. Resume drawing or save it."}
-                    </p>
+                      <h3 className="mt-1 text-lg font-semibold">
+                        {drawing ? "Draw a new site" : "Site draft"}
+                      </h3>
+                    </div>
+
+                    <span className="rounded-full bg-[#eef5ef] px-3 py-1 text-[11px] font-bold text-[#39734a]">
+                      {drawing ? "DRAWING" : "DRAFT"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-5">
+                  <div className="rounded-xl bg-[#f5f8f5] p-4">
+                    <div className="flex gap-3">
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#dfece1] text-xs font-bold text-[#39734a]">
+                        i
+                      </div>
+
+                      <div>
+                        <p className="text-xs font-semibold text-[#17351f]">
+                          How to map a site
+                        </p>
+
+                        <p className="mt-1 text-xs leading-5 text-gray-500">
+                          Click at least 3 points on the map, then click the
+                          first point to close the polygon. Press Escape to
+                          pause without losing your draft.
+                        </p>
+                      </div>
+                    </div>
                   </div>
 
-                  <span className="rounded-full bg-[#eef4ef] px-3 py-1 text-xs font-medium text-[#39734a]">
-                    {drawing ? "Drawing" : "Draft"}
-                  </span>
-                </div>
+                  <div className="mt-5">
+                    <label
+                      htmlFor="site-name"
+                      className="mb-2 block text-sm font-semibold text-gray-700"
+                    >
+                      Site name
+                    </label>
 
-                <div className="mt-4 rounded-lg bg-[#f5f7f4] px-3 py-2.5 text-xs leading-5 text-gray-600">
-                  Add at least 3 points. Click the first
-                  point again to close the polygon.
-                  Press Escape to pause drawing.
-                </div>
+                    <input
+                      id="site-name"
+                      type="text"
+                      value={siteName}
+                      onChange={(event) => setSiteName(event.target.value)}
+                      placeholder="Western Ghats — Zone A"
+                      className="w-full rounded-xl border border-[#d5ded6] px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-[#39734a] focus:ring-4 focus:ring-[#39734a]/10"
+                    />
+                  </div>
 
-                <input
-                  type="text"
-                  value={siteName}
-                  onChange={(event) =>
-                    setSiteName(event.target.value)
-                  }
-                  placeholder="Site name"
-                  className="mt-4 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-[#39734a] focus:ring-2 focus:ring-[#39734a]/20"
-                />
+                  <div className="mt-5 grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={cancelDrawing}
+                      className="rounded-xl border border-[#d5ded6] px-4 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+                    >
+                      Cancel
+                    </button>
 
-                <div className="mt-4 grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={cancelDrawing}
-                    className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                  >
-                    Cancel
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={saveSite}
-                    className="rounded-lg bg-[#39734a] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#2f603e]"
-                  >
-                    Save site
-                  </button>
+                    <button
+                      type="button"
+                      onClick={saveSite}
+                      className="rounded-xl bg-[#39734a] px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#2f603e]"
+                    >
+                      Save site
+                    </button>
+                  </div>
                 </div>
               </section>
             )}
 
-            <section className="rounded-2xl border border-[#dfe6e0] bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-[#17351f]">
-                  Sites
-                </h3>
+            {/* Sites list */}
+            <section className="rounded-2xl border border-[#dfe7e0] bg-white shadow-sm">
+              <div className="flex items-center justify-between border-b border-[#e7ece7] px-5 py-5">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[#39734a]">
+                    Geographic data
+                  </p>
 
-                <span className="rounded-full bg-[#eef4ef] px-3 py-1 text-xs font-medium text-[#39734a]">
+                  <h3 className="mt-1 text-lg font-semibold">
+                    Project sites
+                  </h3>
+                </div>
+
+                <span className="flex h-8 min-w-8 items-center justify-center rounded-full bg-[#17351f] px-2.5 text-xs font-bold text-white">
                   {sites.length}
                 </span>
               </div>
 
-              {sites.length === 0 ? (
-                <p className="mt-5 text-sm leading-6 text-gray-500">
-                  No sites have been added to this project yet.
-                </p>
-              ) : (
-                <div className="mt-4 space-y-3">
-                  {sites.map((site) => (
-                    <button
-                      key={site.id}
-                      type="button"
-                      onClick={() =>
-                        navigate(`/sites/${site.id}`)
-                      }
-                      className="w-full rounded-xl border border-gray-200 p-4 text-left transition hover:border-[#39734a]"
-                    >
-                      <p className="font-medium text-[#17351f]">
-                        {site.name}
-                      </p>
+              <div className="p-4">
+                {sites.length === 0 ? (
+                  <div className="rounded-xl border border-dashed border-[#cbd8cd] bg-[#fafcf9] px-5 py-8 text-center">
+                    <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl bg-[#eef5ef] text-lg text-[#39734a]">
+                      +
+                    </div>
 
-                      <p className="mt-1 text-xs text-gray-500">
-                        Site #{site.id}
-                      </p>
-                    </button>
-                  ))}
-                </div>
-              )}
+                    <p className="mt-4 text-sm font-semibold text-[#17351f]">
+                      No sites mapped
+                    </p>
+
+                    <p className="mt-1 text-xs leading-5 text-gray-500">
+                      Add a geographic boundary to start analysing
+                      biodiversity data.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {sites.map((site, index) => (
+                      <button
+                        key={site.id}
+                        type="button"
+                        onClick={() => navigate(`/sites/${site.id}`)}
+                        className="group w-full rounded-xl border border-[#e2e9e3] p-4 text-left transition hover:border-[#b9cdbb] hover:bg-[#f8fbf8]"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#eef5ef] text-xs font-bold text-[#39734a]">
+                            {index + 1}
+                          </div>
+
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm font-semibold text-[#17351f]">
+                              {site.name}
+                            </p>
+
+                            <p className="mt-1 text-xs text-gray-400">
+                              Site #{site.id}
+                            </p>
+                          </div>
+
+                          <span className="text-gray-300 transition group-hover:translate-x-1 group-hover:text-[#39734a]">
+                            →
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </section>
+
+            {/* Analytics hint */}
+            <div className="rounded-2xl bg-[#17351f] p-5 text-white shadow-sm">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-sm">
+                ↗
+              </div>
+
+              <h3 className="mt-4 text-sm font-semibold">
+                Explore site intelligence
+              </h3>
+
+              <p className="mt-1 text-xs leading-5 text-[#c9d9cc]">
+                Select any mapped site to view biodiversity observations and
+                environmental analytics.
+              </p>
+            </div>
           </aside>
         </div>
       </main>
@@ -622,4 +731,3 @@ function ProjectDetail() {
 }
 
 export default ProjectDetail;
-

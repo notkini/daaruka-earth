@@ -1,4 +1,5 @@
-import { useState } from "react";import type { FormEvent } from "react";
+import { useState } from "react";
+import type { FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import PasswordInput from "../components/PasswordInput";
@@ -18,35 +19,25 @@ function Register() {
 
   const passwordStrong = isPasswordStrong(password);
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setError("");
     setLoading(true);
 
     if (!passwordStrong) {
-      setError(
-        "Please complete all password requirements.",
-      );
+      setError("Please complete all password requirements.");
       setLoading(false);
       return;
     }
 
     try {
-      const response = await api.post(
-        "/api/auth/register",
-        {
-          email,
-          password,
-        },
-      );
+      const response = await api.post("/api/auth/register", {
+        email,
+        password,
+      });
 
-      localStorage.setItem(
-        "access_token",
-        response.data.access_token,
-      );
+      localStorage.setItem("access_token", response.data.access_token);
 
       navigate("/dashboard");
     } catch (error: any) {
@@ -58,8 +49,7 @@ function Register() {
         setError(detail.join(" "));
       } else {
         setError(
-          detail ||
-            "Unable to create your account. Please try again.",
+          detail || "Unable to create your account. Please try again.",
         );
       }
     } finally {
@@ -68,131 +58,231 @@ function Register() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f7f4]">
-      <div className="grid min-h-screen lg:grid-cols-2">
-        <div className="hidden bg-[#17351f] p-12 text-white lg:flex lg:flex-col lg:justify-between">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300">
-              Darukaa.Earth
-            </p>
+    <div className="min-h-screen bg-[#f4f7f3]">
+      <div className="grid min-h-screen lg:grid-cols-[1.08fr_0.92fr]">
+        {/* Brand panel */}
+        <section className="relative hidden overflow-hidden bg-[#17351f] lg:flex lg:flex-col lg:justify-between">
+          <div className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-[#39734a]/30 blur-3xl" />
+          <div className="absolute -bottom-40 -left-20 h-96 w-96 rounded-full bg-[#739b78]/15 blur-3xl" />
 
-            <div className="mt-20 max-w-lg">
-              <p className="text-sm font-medium uppercase tracking-widest text-emerald-300">
-                Environmental intelligence
-              </p>
+          <div className="relative p-12 xl:p-16">
+            <Link to="/register" className="inline-flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-lg font-bold text-[#17351f]">
+                D
+              </div>
 
-              <h1 className="mt-5 text-5xl font-semibold leading-tight tracking-tight">
-                Understand the places worth protecting.
+              <div>
+                <p className="text-sm font-bold tracking-tight text-white">
+                  Darukaa.Earth
+                </p>
+
+                <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#9fbea4]">
+                  Environmental intelligence
+                </p>
+              </div>
+            </Link>
+
+            <div className="mt-28 max-w-xl">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-[#b8d1bc]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#9bc6a2]" />
+                Start your environmental workspace
+              </div>
+
+              <h1 className="mt-6 text-5xl font-semibold leading-[1.06] tracking-tight text-white xl:text-6xl">
+                Build a clearer picture of the places worth protecting.
               </h1>
 
-              <p className="mt-6 max-w-md text-base leading-7 text-emerald-50/70">
-                Manage conservation projects, map geographic
-                sites, and explore biodiversity data in one
-                place.
+              <p className="mt-7 max-w-lg text-base leading-7 text-[#c6d8ca]">
+                Create projects, map geographic sites, and explore biodiversity
+                observations from one focused workspace.
               </p>
+
+              <div className="mt-10 max-w-lg space-y-3">
+                <Benefit
+                  number="01"
+                  title="Create projects"
+                  description="Organise environmental work in dedicated project spaces."
+                />
+
+                <Benefit
+                  number="02"
+                  title="Map geographic sites"
+                  description="Draw and manage site boundaries directly on an interactive map."
+                />
+
+                <Benefit
+                  number="03"
+                  title="Explore biodiversity"
+                  description="Inspect spatial biodiversity observations and analytics."
+                />
+              </div>
             </div>
           </div>
 
-          <div className="text-sm text-emerald-100/50">
-            Geospatial data • Biodiversity • Conservation
+          <div className="relative px-12 pb-10 xl:px-16">
+            <div className="flex items-center gap-3 text-xs text-[#8fa994]">
+              <span className="h-px w-8 bg-[#607d66]" />
+              Geospatial data • Biodiversity • Conservation
+            </div>
           </div>
-        </div>
+        </section>
 
-        <div className="flex items-center justify-center px-6 py-12 sm:px-10">
+        {/* Registration */}
+        <main className="flex items-center justify-center px-5 py-10 sm:px-8 lg:px-12">
           <div className="w-full max-w-md">
-            <div className="mb-8 lg:hidden">
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#39734a]">
-                Darukaa.Earth
-              </p>
+            {/* Mobile brand */}
+            <div className="mb-10 lg:hidden">
+              <Link to="/register" className="inline-flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#17351f] text-sm font-bold text-white">
+                  D
+                </div>
+
+                <div>
+                  <p className="text-sm font-bold text-[#17351f]">
+                    Darukaa.Earth
+                  </p>
+
+                  <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-gray-400">
+                    Environmental intelligence
+                  </p>
+                </div>
+              </Link>
             </div>
 
-            <div className="mb-8">
-              <h2 className="text-3xl font-semibold tracking-tight text-[#17351f]">
+            <div className="mb-7">
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-[#eaf2eb] text-sm text-[#39734a]">
+                +
+              </div>
+
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#39734a]">
+                Get started
+              </p>
+
+              <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[#17351f]">
                 Create your account
               </h2>
 
-              <p className="mt-2 text-sm leading-6 text-slate-500">
-                Start managing your environmental projects.
+              <p className="mt-3 text-sm leading-6 text-gray-500">
+                Set up your workspace and start managing environmental
+                projects.
               </p>
             </div>
 
             <form
               onSubmit={handleSubmit}
-              className="space-y-5"
+              className="rounded-3xl border border-[#dfe7e0] bg-white p-6 shadow-sm sm:p-7"
             >
-              <div>
-                <label
-                  htmlFor="email"
-                  className="mb-2 block text-sm font-medium text-slate-700"
-                >
-                  Email address
-                </label>
+              <div className="space-y-5">
+                {/* Email */}
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="mb-2 block text-sm font-semibold text-gray-700"
+                  >
+                    Email address
+                  </label>
 
-                <input
-                  id="email"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(event) =>
-                    setEmail(event.target.value)
-                  }
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
-                />
-              </div>
-
-              <div>
-                <PasswordInput
-                  label="Password"
-                  value={password}
-                  onChange={setPassword}
-                  placeholder="Create a strong password"
-                  autoComplete="new-password"
-                />
-
-                <PasswordRequirements
-                  password={password}
-                />
-              </div>
-
-              {error && (
-                <div
-                  role="alert"
-                  className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-5 text-red-700"
-                >
-                  {error}
+                  <input
+                    id="email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    className="w-full rounded-xl border border-[#d5ded6] bg-white px-4 py-3.5 text-sm text-[#17351f] outline-none transition placeholder:text-gray-400 hover:border-[#bdcabe] focus:border-[#39734a] focus:ring-4 focus:ring-[#39734a]/10"
+                  />
                 </div>
-              )}
 
-              <button
-                type="submit"
-                disabled={
-                  loading || !passwordStrong
-                }
-                className="w-full rounded-xl bg-[#17351f] px-4 py-3.5 text-sm font-semibold text-white transition hover:bg-[#24512f] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
-              >
-                {loading
-                  ? "Creating account..."
-                  : "Create account"}
-              </button>
+                {/* Password */}
+                <div>
+                  <PasswordInput
+                    label="Password"
+                    value={password}
+                    onChange={setPassword}
+                    placeholder="Create a strong password"
+                    autoComplete="new-password"
+                  />
+
+                  <div className="mt-3 rounded-xl border border-[#e5ebe6] bg-[#f8faf8] p-3">
+                    <PasswordRequirements password={password} />
+                  </div>
+                </div>
+
+                {/* Error */}
+                {error && (
+                  <div
+                    role="alert"
+                    className="flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm leading-5 text-red-700"
+                  >
+                    <span className="font-bold">!</span>
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                {/* Submit */}
+                <button
+                  type="submit"
+                  disabled={loading || !passwordStrong}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#17351f] px-4 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#24512f] hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {loading && (
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  )}
+
+                  {loading ? "Creating account..." : "Create account"}
+                </button>
+              </div>
             </form>
 
-            <p className="mt-6 text-center text-sm text-slate-500">
-              Already have an account?{" "}
-              <Link
-                to="/login"
-                className="font-semibold text-[#39734a] hover:text-[#24512f]"
-              >
-                Sign in
-              </Link>
+            <div className="my-7 flex items-center gap-4">
+              <div className="h-px flex-1 bg-[#dfe7e0]" />
+              <span className="text-xs text-gray-400">Already registered?</span>
+              <div className="h-px flex-1 bg-[#dfe7e0]" />
+            </div>
+
+            <Link
+              to="/login"
+              className="flex w-full items-center justify-center rounded-xl border border-[#d5ded6] bg-white px-4 py-3.5 text-sm font-semibold text-[#17351f] transition hover:border-[#b9cdbb] hover:bg-[#f7faf7]"
+            >
+              Sign in to your account
+            </Link>
+
+            <p className="mt-7 text-center text-[11px] leading-5 text-gray-400">
+              Create an account to manage environmental projects, geographic
+              sites, and biodiversity analysis.
             </p>
           </div>
-        </div>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+function Benefit({
+  number,
+  title,
+  description,
+}: {
+  number: string;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+      <span className="pt-0.5 text-[10px] font-bold tracking-[0.15em] text-[#8faf94]">
+        {number}
+      </span>
+
+      <div>
+        <p className="text-sm font-semibold text-white">{title}</p>
+
+        <p className="mt-1 text-xs leading-5 text-[#91aa95]">
+          {description}
+        </p>
       </div>
     </div>
   );
 }
 
 export default Register;
-
