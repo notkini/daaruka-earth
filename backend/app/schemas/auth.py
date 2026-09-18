@@ -1,12 +1,12 @@
 from pydantic import BaseModel, EmailStr
 
 
-class UserRegister(BaseModel):
+class RegisterRequest(BaseModel):
     email: EmailStr
     password: str
 
 
-class UserLogin(BaseModel):
+class LoginRequest(BaseModel):
     email: EmailStr
     password: str
 
@@ -16,6 +16,23 @@ class TokenResponse(BaseModel):
     token_type: str
 
 
-class UserResponse(BaseModel):
-    id: int
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+
+class ForgotPasswordRequest(BaseModel):
     email: EmailStr
+
+
+class ForgotPasswordResponse(BaseModel):
+    message: str
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+
+class ResetPasswordResponse(BaseModel):
+    message: str

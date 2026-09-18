@@ -17,12 +17,12 @@ def get_current_user(
 
     try:
         user_id = decode_access_token(token)
-    except (ValueError, TypeError):
+    except (ValueError, TypeError) as error:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired token",
             headers={"WWW-Authenticate": "Bearer"},
-        ) from error 
+        ) from error
 
     user = db.query(User).filter(User.id == user_id).first()
 

@@ -6,6 +6,8 @@ from app.main import app
 
 client = TestClient(app)
 
+TEST_PASSWORD = "Password@123"
+
 
 def test_register_user() -> None:
     email = f"test-{uuid4()}@example.com"
@@ -14,7 +16,7 @@ def test_register_user() -> None:
         "/api/auth/register",
         json={
             "email": email,
-            "password": "password123",
+            "password": TEST_PASSWORD,
         },
     )
 
@@ -22,10 +24,8 @@ def test_register_user() -> None:
 
     data = response.json()
 
-    assert data["email"] == email
-    assert "id" in data
-    assert "password" not in data
-    assert "password_hash" not in data
+    assert "access_token" in data
+    assert data["token_type"] == "bearer"
 
 
 def test_register_duplicate_email() -> None:
@@ -33,7 +33,7 @@ def test_register_duplicate_email() -> None:
 
     payload = {
         "email": email,
-        "password": "password123",
+        "password": TEST_PASSWORD,
     }
 
     first_response = client.post(
@@ -48,26 +48,31 @@ def test_register_duplicate_email() -> None:
         json=payload,
     )
 
-    assert second_response.status_code == 400
-    assert second_response.json()["detail"] == "Email already registered"
+    assert second_response.status_code == 409
+    assert (
+        second_response.json()["detail"]
+        == "An account with this email already exists."
+    )
 
 
 def test_login_user() -> None:
     email = f"login-{uuid4()}@example.com"
 
-    client.post(
+    register_response = client.post(
         "/api/auth/register",
         json={
             "email": email,
-            "password": "password123",
+            "password": TEST_PASSWORD,
         },
     )
+
+    assert register_response.status_code == 201
 
     response = client.post(
         "/api/auth/login",
         json={
             "email": email,
-            "password": "password123",
+            "password": TEST_PASSWORD,
         },
     )
 
@@ -82,19 +87,21 @@ def test_login_user() -> None:
 def test_login_wrong_password() -> None:
     email = f"wrong-password-{uuid4()}@example.com"
 
-    client.post(
+    register_response = client.post(
         "/api/auth/register",
         json={
             "email": email,
-            "password": "password123",
+            "password": TEST_PASSWORD,
         },
     )
+
+    assert register_response.status_code == 201
 
     response = client.post(
         "/api/auth/login",
         json={
             "email": email,
-            "password": "wrongpassword",
+            "password": "Wrong@123",
         },
     )
 
@@ -104,19 +111,21 @@ def test_login_wrong_password() -> None:
 def test_get_current_user() -> None:
     email = f"me-{uuid4()}@example.com"
 
-    client.post(
+    register_response = client.post(
         "/api/auth/register",
         json={
             "email": email,
-            "password": "password123",
+            "password": TEST_PASSWORD,
         },
     )
+
+    assert register_response.status_code == 201
 
     login_response = client.post(
         "/api/auth/login",
         json={
             "email": email,
-            "password": "password123",
+            "password": TEST_PASSWORD,
         },
     )
 
@@ -136,6 +145,8 @@ def test_get_current_user() -> None:
     data = response.json()
 
     assert data["email"] == email
+    assert "id" in data
+    assert "created_at" in data
 
 
 def test_get_current_user_without_token() -> None:

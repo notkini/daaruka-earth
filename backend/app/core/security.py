@@ -49,15 +49,21 @@ def create_access_token(user_id: int) -> str:
 
 
 def decode_access_token(token: str) -> int:
-    payload = jwt.decode(
-        token,
-        settings.jwt_secret,
-        algorithms=[ALGORITHM],
-    )
+    try:
+        payload = jwt.decode(
+            token,
+            settings.jwt_secret,
+            algorithms=[ALGORITHM],
+        )
+    except jwt.PyJWTError as error:
+        raise ValueError("Invalid or expired token") from error
 
     user_id = payload.get("sub")
 
     if user_id is None:
         raise ValueError("Invalid token")
 
-    return int(user_id)
+    try:
+        return int(user_id)
+    except (TypeError, ValueError) as error:
+        raise ValueError("Invalid token") from error
